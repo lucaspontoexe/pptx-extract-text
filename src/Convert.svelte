@@ -1,39 +1,55 @@
 <script lang="ts">
-    import {loadAsync} from "jszip";
-    const dp = new DOMParser();
-    let finalText = "";
+    import uzip from 'uzip';
+
     export let name = "vamo lá";
+    
+    let finalText = "ih caramba";
+    const dp = new DOMParser();
 
-    async function handleLoad(e: Event) {
-        const file = (e.target as HTMLInputElement).files[0];
-
-        const zip = await loadAsync(file);
-        zip.filter((path) => path.indexOf("ppt/slides/slide") !== -1).forEach(
-            async (file) => {
-                const fileContent = await file.async("string");
-                finalText += parseXML(fileContent);
-            }
-        );
-    }
+    const utf8decoder = new TextDecoder();
 
     function parseXML(input: string) {
+        function getLineText(node: HTMLParagraphElement) {
+            const words = node.childNodes;
+            let finalText = "";
+
+            words.forEach((element: Element & { tagName: string; textContent: string; }) => {
+                // if (element.tagName === "a:r") finalText += element.textContent;
+                // else 
+                if (element.tagName === "a:br") finalText += "\n";
+                else finalText += element.textContent;
+            });
+            return finalText;
+        }
+
         let output = "";
         const xmldoc = dp.parseFromString(input, "text/xml");
         xmldoc.querySelectorAll("p").forEach((entry) => {
-            output += entry.textContent.trim() + "\n";
+            output += getLineText(entry).trim() + "\n";
         });
         return output;
     }
+
+    async function handleLoad(e: Event) {
+        const file = (e.target as HTMLInputElement).files[0];
+        finalText = "";
+
+        const files = await uzip.parse(await file.arrayBuffer());
+        const fileList = Object.keys(files).filter(entry => entry.indexOf("ppt/slides/slide") !== -1)
+        const howManyFiles = fileList.length;
+
+        for (let index = 1; index <= howManyFiles; index++) {
+            const buffer = files["ppt/slides/slide" + index + ".xml"];
+            const content = utf8decoder.decode(buffer);
+            finalText += parseXML(content);
+        }
+    }
 </script>
 
-<main>
-    <input type="file" accept=".pptx" on:change={handleLoad} />
+<h1>IIIIRRRÁAAAApaaaaaaaaaaaizzzz</h1>
+<p>o name é {name}</p>
 
-    fun fact: a prop <em>name</em> é {name}
+<input type="file" on:change={handleLoad} />
 
-    <br />
-    <hr />
-    <pre>
-        {finalText}
-    </pre>
-</main>
+<hr /><br />
+<pre>{finalText}</pre>
