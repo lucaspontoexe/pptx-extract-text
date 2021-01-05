@@ -1,5 +1,5 @@
 <script lang="ts">
-    import jszip, { files } from "jszip";
+    import {loadAsync} from "jszip";
     const dp = new DOMParser();
     let finalText = "";
     export let name = "vamo lá";
@@ -7,7 +7,7 @@
     async function handleLoad(e: Event) {
         const file = (e.target as HTMLInputElement).files[0];
 
-        const zip = await jszip.loadAsync(file);
+        const zip = await loadAsync(file);
         zip.filter((path) => path.indexOf("ppt/slides/slide") !== -1).forEach(
             async (file) => {
                 const fileContent = await file.async("string");
@@ -30,7 +30,7 @@
     <input type="file" accept=".pptx" on:change={handleLoad} />
 
     fun fact: a prop <em>name</em> é {name}
-    
+
     <br />
     <hr />
     <pre>
