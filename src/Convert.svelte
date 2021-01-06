@@ -1,8 +1,8 @@
 <script lang="ts">
-    import uzip from 'uzip';
+    import uzip from "uzip";
 
     export let name = "vamo lá";
-    
+
     let finalText = "ih caramba";
     const dp = new DOMParser();
 
@@ -13,12 +13,16 @@
             const words = node.childNodes;
             let finalText = "";
 
-            words.forEach((element: Element & { tagName: string; textContent: string; }) => {
-                // if (element.tagName === "a:r") finalText += element.textContent;
-                // else 
-                if (element.tagName === "a:br") finalText += "\n";
-                else finalText += element.textContent;
-            });
+            words.forEach(
+                (
+                    element: Element & { tagName: string; textContent: string }
+                ) => {
+                    // if (element.tagName === "a:r") finalText += element.textContent;
+                    // else
+                    if (element.tagName === "a:br") finalText += "\n";
+                    else finalText += element.textContent;
+                }
+            );
             return finalText;
         }
 
@@ -30,13 +34,19 @@
         return output;
     }
 
-    async function handleLoad(e: Event) {
+    function handleInputFile(e: Event) {
         const file = (e.target as HTMLInputElement).files[0];
+        loadFile(file);
+    }
+
+    async function loadFile(file: File) {
         finalText = "";
 
         const files = uzip.parse(await file.arrayBuffer());
 
-        const howManyFiles = Object.keys(files).filter(entry => entry.indexOf("ppt/slides/slide") !== -1).length;
+        const howManyFiles = Object.keys(files).filter(
+            (entry) => entry.indexOf("ppt/slides/slide") !== -1
+        ).length;
 
         for (let index = 1; index <= howManyFiles; index++) {
             const buffer = files["ppt/slides/slide" + index + ".xml"];
@@ -49,7 +59,15 @@
 <h1>IIIIRRRÁAAAApaaaaaaaaaaaizzzz</h1>
 <p>o name é {name}</p>
 
-<input type="file" on:change={handleLoad} />
+<div class="drop-target">
+    <div
+        class="text"
+        on:dragover={(e) => e.preventDefault()}
+        on:drop|preventDefault={(e) => loadFile(e.dataTransfer.files[0])}>
+        Arraste um arquivo .pptx para converter em texto.
+    </div>
+    <input type="file" on:change={handleInputFile} accept=".pptx" />
+</div>
 
 <hr /><br />
 <pre>{finalText}</pre>
