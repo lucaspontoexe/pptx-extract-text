@@ -34,9 +34,9 @@
         const file = (e.target as HTMLInputElement).files[0];
         finalText = "";
 
-        const files = await uzip.parse(await file.arrayBuffer());
-        const fileList = Object.keys(files).filter(entry => entry.indexOf("ppt/slides/slide") !== -1)
-        const howManyFiles = fileList.length;
+        const files = uzip.parse(await file.arrayBuffer());
+
+        const howManyFiles = Object.keys(files).filter(entry => entry.indexOf("ppt/slides/slide") !== -1).length;
 
         for (let index = 1; index <= howManyFiles; index++) {
             const buffer = files["ppt/slides/slide" + index + ".xml"];
