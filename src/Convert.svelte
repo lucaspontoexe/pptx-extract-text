@@ -4,8 +4,11 @@
     export let name = "vamo lá";
 
     let finalText = "ih caramba";
-    const dp = new DOMParser();
 
+    type states = "idle" | "isDragging" | "dropped";
+    let state: states = "idle";
+
+    const dp = new DOMParser();
     const utf8decoder = new TextDecoder();
 
     function parseXML(input: string) {
@@ -56,15 +59,19 @@
     }
 </script>
 
-<h1>IIIIRRRÁAAAApaaaaaaaaaaaizzzz</h1>
+<h1>PPTX to TXT</h1>
 <p>o name é {name}</p>
 
 <div class="drop-target">
     <div
         class="text"
-        on:dragover={(e) => e.preventDefault()}
-        on:drop|preventDefault={(e) => loadFile(e.dataTransfer.files[0])}>
-        Arraste um arquivo .pptx para converter em texto.
+        on:dragover|preventDefault={() => (state = 'isDragging')}
+        on:drop|preventDefault={(e) => {
+            loadFile(e.dataTransfer.files[0]);
+            state = 'dropped';
+        }}>
+        {state === 'isDragging' ? 'Solte' : 'Arraste'}
+        um arquivo .pptx para converter em texto.
     </div>
     <input type="file" on:change={handleInputFile} accept=".pptx" />
 </div>
