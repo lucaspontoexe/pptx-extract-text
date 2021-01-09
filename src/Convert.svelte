@@ -1,8 +1,6 @@
 <script lang="ts">
     import uzip from "uzip";
 
-    export let name = "vamo lá";
-
     let finalText = "";
 
     type states = "idle" | "dragging" | "dropped";
@@ -110,8 +108,7 @@
 
     <div class="text">
         {state === 'dragging' ? 'Solte' : 'Arraste'}
-        um arquivo .pptx para converter em texto. o name é
-        {name}
+        um arquivo .pptx para converter em texto.
     </div>
 
     <input type="file" on:change={handleInputFile} accept=".pptx" />
