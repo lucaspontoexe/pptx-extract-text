@@ -48,7 +48,13 @@
     }
 
     async function loadFile(file: File) {
+        if (!file) {
+            state = "idle";
+            return;
+        }
+
         finalText = "";
+        state = "dropped";
 
         const files = uzip.parse(await file.arrayBuffer());
 
@@ -107,10 +113,7 @@
     class={state}
     on:dragover|preventDefault={() => (state = 'dragging')}
     on:dragleave|preventDefault={() => (state = 'idle')}
-    on:drop|preventDefault={(e) => {
-        loadFile(e.dataTransfer.files[0]);
-        state = 'dropped';
-    }}>
+    on:drop|preventDefault={(e) => loadFile(e.dataTransfer.files[0])}>
     <h1>PPTX to TXT</h1>
 
     <div class="text">
@@ -121,8 +124,10 @@
     <input type="file" on:change={handleInputFile} accept=".pptx" />
 </main>
 
-<section class="post-select {state}">
-    <h2>Aqui está o texto</h2>
+<section
+    class="post-select {state}"
+    on:dragover|preventDefault={() => (state = 'dragging')}>
+    <h2>Texto extraído</h2>
     <p>Arraste ou selecione outro arquivo para converter</p>
 
     <input type="file" on:change={handleInputFile} accept=".pptx" />
