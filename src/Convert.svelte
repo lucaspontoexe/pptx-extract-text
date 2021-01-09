@@ -3,9 +3,9 @@
 
     export let name = "vamo lá";
 
-    let finalText = "ih caramba";
+    let finalText = "";
 
-    type states = "idle" | "isDragging" | "dropped";
+    type states = "idle" | "dragging" | "dropped";
     let state: states = "idle";
 
     const dp = new DOMParser();
@@ -39,6 +39,7 @@
 
     function handleInputFile(e: Event) {
         const file = (e.target as HTMLInputElement).files[0];
+        state = "dropped";
         loadFile(file);
     }
 
@@ -59,22 +60,52 @@
     }
 </script>
 
-<h1>PPTX to TXT</h1>
-<p>o name é {name}</p>
+<main
+    class="{state}"
+    on:dragover|preventDefault={() => (state = 'dragging')}
+    on:dragleave|preventDefault={() => (state = 'idle')}
+    on:drop|preventDefault={(e) => {
+        loadFile(e.dataTransfer.files[0]);
+        state = 'dropped';
+    }}>
 
-<div class="drop-target">
-    <div
-        class="text"
-        on:dragover|preventDefault={() => (state = 'isDragging')}
-        on:drop|preventDefault={(e) => {
-            loadFile(e.dataTransfer.files[0]);
-            state = 'dropped';
-        }}>
-        {state === 'isDragging' ? 'Solte' : 'Arraste'}
-        um arquivo .pptx para converter em texto.
+    <h1>PPTX to TXT</h1>
+
+    <div class="text">
+        {state === 'dragging' ? 'Solte' : 'Arraste'}
+        um arquivo .pptx para converter em texto. o name é {name}
     </div>
-    <input type="file" on:change={handleInputFile} accept=".pptx" />
-</div>
 
-<hr /><br />
+    <input type="file" on:change={handleInputFile} accept=".pptx" />
+</main>
+
 <pre>{finalText}</pre>
+
+<style>
+    main {
+        position: absolute;
+        left: 5vw;
+        top: 5vh;
+        width: 90%;
+        height: 90%;
+        border-radius: 10px;
+        text-align: center;
+        border: 4px dotted rgb(184, 184, 184);
+        background-color: rgba(143, 143, 143, 0.39);
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+
+        transition: background-color 200ms, border 200ms, opacity 200ms;
+    }
+        main.dragging {
+            border: 4px dotted rgb(235, 185, 76);
+            background-color: rgba(238, 205, 20, 0.6);
+        }
+
+        main.dropped {
+            opacity: 0;
+        }
+</style>
