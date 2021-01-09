@@ -27,10 +27,16 @@
             return finalText;
         }
 
+        let lineBreakCount = 0;
+
         let output = "";
         const xmldoc = dp.parseFromString(input, "text/xml");
         xmldoc.querySelectorAll("p").forEach((entry) => {
-            output += getLineText(entry).trim() + "\n";
+            const text = getLineText(entry).trim() + "\n";
+            if (text === "\n") lineBreakCount++;
+            else lineBreakCount = 0;
+
+            if (lineBreakCount < 2) output += text;
         });
         return output;
     }
