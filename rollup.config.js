@@ -65,7 +65,7 @@ export default {
 				// nodePolyfills(),
 		commonjs(),
 		typescript({
-			sourceMap: !production,
+			sourceMap: true,
 			inlineSources: !production
 		}),
 
