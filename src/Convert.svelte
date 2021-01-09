@@ -60,27 +60,6 @@
     }
 </script>
 
-<main
-    class="{state}"
-    on:dragover|preventDefault={() => (state = 'dragging')}
-    on:dragleave|preventDefault={() => (state = 'idle')}
-    on:drop|preventDefault={(e) => {
-        loadFile(e.dataTransfer.files[0]);
-        state = 'dropped';
-    }}>
-
-    <h1>PPTX to TXT</h1>
-
-    <div class="text">
-        {state === 'dragging' ? 'Solte' : 'Arraste'}
-        um arquivo .pptx para converter em texto. o name é {name}
-    </div>
-
-    <input type="file" on:change={handleInputFile} accept=".pptx" />
-</main>
-
-<pre>{finalText}</pre>
-
 <style>
     main {
         position: absolute;
@@ -92,6 +71,7 @@
         text-align: center;
         border: 4px dotted rgb(184, 184, 184);
         background-color: rgba(143, 143, 143, 0.39);
+        z-index: 1;
 
         display: flex;
         align-items: center;
@@ -100,12 +80,49 @@
 
         transition: background-color 200ms, border 200ms, opacity 200ms;
     }
-        main.dragging {
-            border: 4px dotted rgb(235, 185, 76);
-            background-color: rgba(238, 205, 20, 0.6);
-        }
+    main.dragging {
+        border: 4px dotted rgb(235, 185, 76);
+        background-color: rgba(238, 205, 20, 0.6);
+    }
 
-        main.dropped {
-            opacity: 0;
-        }
+    main.dropped {
+        opacity: 0;
+    }
+
+    .post-select {
+        opacity: 0;
+        transition: opacity 200ms;
+    }
+    .post-select.dropped {
+        opacity: 1;
+    }
 </style>
+
+<main
+    class={state}
+    on:dragover|preventDefault={() => (state = 'dragging')}
+    on:dragleave|preventDefault={() => (state = 'idle')}
+    on:drop|preventDefault={(e) => {
+        loadFile(e.dataTransfer.files[0]);
+        state = 'dropped';
+    }}>
+    <h1>PPTX to TXT</h1>
+
+    <div class="text">
+        {state === 'dragging' ? 'Solte' : 'Arraste'}
+        um arquivo .pptx para converter em texto. o name é
+        {name}
+    </div>
+
+    <input type="file" on:change={handleInputFile} accept=".pptx" />
+</main>
+
+<section class="post-select {state}">
+    <h2>Aqui está o texto</h2>
+    <p>Arraste ou selecione outro arquivo para converter</p>
+
+    <input type="file" on:change={handleInputFile} accept=".pptx" />
+    <hr />
+
+    <pre>{finalText}</pre>
+</section>
